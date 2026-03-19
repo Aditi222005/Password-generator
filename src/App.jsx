@@ -15,17 +15,24 @@ export default function App() {
   const [trigger, setTrigger] = useState(0);
   const [history, setHistory] = useState([]);
 
-  // FEATURE 5: Password Generator Optimization using useMemo
+  // FEATURE 5 & PHASE 4: Password Generator Optimization & Web Crypto API
   const password = useMemo(() => {
-    console.log("Generating password from useMemo..."); // Validating memoization
+    console.log("Generating secure password using Web Crypto API...");
     let str = "abcdefghijklmnopqrstuvwxyz";
     if (uppercaseAllowed) str += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     if (numberAllowed) str += "0123456789";
     if (charAllowed) str += "!@#$%^&*()_+[]{}";
+    
+    if (str.length === 0) return "";
 
     let pass = "";
+    // Crytpographically secure array of random values
+    const randomValues = new Uint32Array(length);
+    window.crypto.getRandomValues(randomValues);
+
     for (let i = 0; i < length; i++) {
-        pass += str[Math.floor(Math.random() * str.length)];
+        // Map the random 32-bit integer to an index in our allowed characters string
+        pass += str[randomValues[i] % str.length];
     }
     return pass;
   }, [length, numberAllowed, charAllowed, uppercaseAllowed, trigger]);
