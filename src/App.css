@@ -1,195 +1,176 @@
+/* ============================================
+   Password Generator – Global Styles
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
-  background: linear-gradient(135deg, #0f0f23 0%, #1a0033 50%, #2d1b69 100%);
-  min-height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #080714;
   color: white;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
-.app-container {
-  position: relative;
-  animation: fadeInUp 0.8s ease-out;
+/* ============================================
+   Card Entrance Animation
+   ============================================ */
+.card-entrance {
+  animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-@keyframes fadeInUp {
+@keyframes cardEntrance {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(40px) scale(0.96);
+    filter: blur(10px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    filter: blur(0px);
   }
 }
 
-.app-container::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><defs><pattern id=\"grain\" width=\"100\" height=\"100\" patternUnits=\"userSpaceOnUse\"><circle cx=\"25\" cy=\"25\" r=\"1\" fill=\"%23ffffff\" opacity=\"0.03\"/><circle cx=\"75\" cy=\"75\" r=\"1\" fill=\"%23ffffff\" opacity=\"0.03\"/><circle cx=\"50\" cy=\"10\" r=\"0.5\" fill=\"%23ffffff\" opacity=\"0.02\"/></pattern></defs><rect width=\"100\" height=\"100\" fill=\"url(%23grain)\"/></svg>');
-  pointer-events: none;
-  z-index: 0;
-}
-
-.title {
-  position: relative;
-  z-index: 1;
-  background: linear-gradient(135deg, #ff6b35, #f7931e, #ff8c42);
-  -webkit-background-clip: text;
-  background-clip: text;
-  animation: glow 2s ease-in-out infinite alternate;
-}
-
-@keyframes glow {
-  from {
-    text-shadow: 0 0 10px rgba(255, 107, 53, 0.5);
-  }
-  to {
-    text-shadow: 0 0 20px rgba(255, 107, 53, 0.8), 0 0 30px rgba(247, 147, 30, 0.6);
-  }
-}
-
-.password-section {
-  position: relative;
-  z-index: 1;
-  transition: all 0.3s ease;
-}
-
-.password-section:hover {
-  transform: scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-}
-
-.password-display {
-  transition: all 0.3s ease;
-}
-
-.password-display:focus {
-  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.3);
-}
-
-.copy-btn {
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.copy-btn::before {
+/* ============================================
+   Generate Button Shimmer
+   ============================================ */
+.generate-btn::before {
   content: '';
   position: absolute;
   top: 0;
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-  transition: left 0.5s;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  transition: left 0.6s ease;
 }
 
-.copy-btn:hover::before {
+.generate-btn:hover::before {
   left: 100%;
 }
 
-.options-container {
-  position: relative;
-  z-index: 1;
+.generate-btn {
+  animation: shimmerBg 3s ease-in-out infinite;
 }
 
-.option-group, .checkbox-group {
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-}
-
-.option-group:hover, .checkbox-group:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-}
-
-.slider {
-  -webkit-appearance: none;
-  appearance: none;
-  height: 8px;
-  border-radius: 5px;
-  background: linear-gradient(to right, #ff6b35, #f7931e, #ff6b35);
-  outline: none;
-  transition: all 0.3s ease;
-}
-
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ff6b35, #f7931e);
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
-  transition: all 0.3s ease;
-}
-
-.slider::-webkit-slider-thumb:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(255, 107, 53, 0.6);
-}
-
-.slider::-moz-range-thumb {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ff6b35, #f7931e);
-  cursor: pointer;
-  border: none;
-  box-shadow: 0 4px 12px rgba(255, 107, 53, 0.4);
-}
-
-@media (max-width: 640px) {
-  .app-container {
-    margin: 1rem;
-    padding: 1.5rem;
+@keyframes shimmerBg {
+  0%, 100% {
+    background-position: 0% 50%;
   }
-  
-  .title {
-    font-size: 2rem;
-  }
-  
-  .option-group, .checkbox-group {
-    flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-  }
-  
-  .slider {
-    width: 100%;
+  50% {
+    background-position: 100% 50%;
   }
 }
 
-/* Loading animation for password generation */
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
+/* ============================================
+   Floating Orb Animations
+   ============================================ */
+@keyframes floatOrb1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(60px, 40px) scale(1.1);
+  }
+  50% {
+    transform: translate(30px, -30px) scale(0.95);
+  }
+  75% {
+    transform: translate(-40px, 20px) scale(1.05);
+  }
 }
 
-.password-display:empty {
-  animation: pulse 1.5s ease-in-out infinite;
+@keyframes floatOrb2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(-50px, -30px) scale(1.05);
+  }
+  50% {
+    transform: translate(-20px, 50px) scale(1.1);
+  }
+  75% {
+    transform: translate(40px, -20px) scale(0.95);
+  }
 }
 
-/* Success feedback for copy */
-.copy-btn.copied {
-  animation: successPulse 0.6s ease-out;
-  background: linear-gradient(135deg, #10b981, #059669);
+@keyframes floatOrb3 {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  33% {
+    transform: translate(-40%, -60%) scale(1.05);
+  }
+  66% {
+    transform: translate(-60%, -40%) scale(0.95);
+  }
 }
 
-@keyframes successPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+/* ============================================
+   Tooltip Fade-In
+   ============================================ */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* ============================================
+   Scrollbar Styling
+   ============================================ */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   Selection Styling
+   ============================================ */
+::selection {
+  background: rgba(139, 92, 246, 0.3);
+  color: white;
+}
+
+/* ============================================
+   Focus Visible
+   ============================================ */
+*:focus-visible {
+  outline: 2px solid rgba(139, 92, 246, 0.5);
+  outline-offset: 2px;
+  border-radius: 8px;
 }

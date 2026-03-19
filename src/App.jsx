@@ -1,98 +1,102 @@
-import { useState, useCallback, useEffect, useRef } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useCallback, useEffect, useMemo } from "react";
+import PasswordDisplay from "./components/PasswordDisplay";
+import Controls from "./components/Controls";
+import StrengthMeter from "./components/StrengthMeter";
+import AnimatedBackground from "./components/AnimatedBackground";
+import PasswordHistory from "./components/PasswordHistory";
 
 export default function App() {
-  const [length, setLength] = useState(8)
-  const [numberAllowed, setNumberAllowed] = useState(false)
-  const [charAllowed, setCharAllowed] = useState(false)
-  const [password, setPassword] = useState("")
+  const [length, setLength] = useState(12);
+  const [numberAllowed, setNumberAllowed] = useState(true);
+  const [charAllowed, setCharAllowed] = useState(true);
+  const [uppercaseAllowed, setUppercaseAllowed] = useState(true);
   
+  // Trigger state to force re-generation on button click
+  const [trigger, setTrigger] = useState(0);
+  const [history, setHistory] = useState([]);
 
-  const passwordRef = useRef(null)
+  // FEATURE 5: Password Generator Optimization using useMemo
+  const password = useMemo(() => {
+    console.log("Generating password from useMemo..."); // Validating memoization
+    let str = "abcdefghijklmnopqrstuvwxyz";
+    if (uppercaseAllowed) str += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    if (numberAllowed) str += "0123456789";
+    if (charAllowed) str += "!@#$%^&*()_+[]{}";
 
-
-
-  const passwordGenerator = useCallback(() => {
-    let pass = ""
-    let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-    if (numberAllowed) str += "0123456789"
-    if (charAllowed) str += "!@#$%^&*()_[]{}+"
+    let pass = "";
     for (let i = 0; i < length; i++) {
-      let char = Math.floor(Math.random() * str.length)
-      pass += str.charAt(char)
+        pass += str[Math.floor(Math.random() * str.length)];
     }
-    setPassword(pass)
-  }, [length, numberAllowed, charAllowed])
+    return pass;
+  }, [length, numberAllowed, charAllowed, uppercaseAllowed, trigger]);
 
+  const generatePassword = useCallback(() => {
+    setTrigger(prev => prev + 1);
+  }, []);
 
-  const copyPasswordToClipboard = useCallback(()=>{
-    passwordRef.current?.setSelectionRange(0,2)
-    passwordRef.current?.select()
-    window.navigator.clipboard.writeText(password)
-  }, [password])
-
-  useEffect(()=>{
-    passwordGenerator()
-  },[length, numberAllowed, charAllowed])
+  // Update history when generated password changes
+  useEffect(() => {
+    if (password) {
+      setHistory(prev => {
+        if (prev[0] === password) return prev;
+        return [password, ...prev].slice(0, 10);
+      });
+    }
+  }, [password]);
 
   return (
-    <>
-      <div className="app-container w-full max-w-md mx-auto shadow-xl rounded-xl px-6 py-8 my-8 text-orange-500 bg-gradient-to-br from-gray-800 to-gray-900 border border-gray-700">
-        <h1 className="title text-white text-center text-3xl font-bold mb-8 bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent drop-shadow-lg">Password Generator</h1>
-        <div className="password-section flex shadow-2xl rounded-xl overflow-hidden mb-8 bg-gray-800/50 backdrop-blur-sm border border-gray-600">
-          <input 
-            
-            type="text" 
-            value={password}
-            className="password-display outline-none w-full py-4 px-6 text-xl font-mono bg-transparent text-white placeholder-gray-400"
-            placeholder="Click generate or adjust options to get a password..."
-            readOnly 
-            ref = {passwordRef}
+    <div className="relative min-h-screen flex items-center justify-center px-4">
+      <AnimatedBackground />
+
+      {/* Main Card */}
+      <div className="card-entrance w-full max-w-lg">
+        <div className="relative bg-white/[0.04] backdrop-blur-2xl border border-white/[0.08] rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+
+          {/* Title */}
+          <div className="text-center space-y-1">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent">
+              Password Generator
+            </h1>
+            <p className="text-white/40 text-sm">
+              Generate secure and customizable passwords
+            </p>
+          </div>
+
+          {/* Password Display */}
+          <PasswordDisplay
+            password={password}
+            onRegenerate={generatePassword}
           />
-          <button 
-            
-            className="copy-btn outline-none bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white px-6 py-4 rounded-r-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 active:scale-95"
-            onClick={copyPasswordToClipboard}
+
+          {/* Strength Meter */}
+          <StrengthMeter password={password} />
+
+          {/* Controls */}
+          <Controls
+            length={length}
+            onLengthChange={setLength}
+            numberAllowed={numberAllowed}
+            onNumberChange={() => setNumberAllowed((prev) => !prev)}
+            charAllowed={charAllowed}
+            onCharChange={() => setCharAllowed((prev) => !prev)}
+            uppercaseAllowed={uppercaseAllowed}
+            onUppercaseChange={() => setUppercaseAllowed((prev) => !prev)}
+          />
+
+          {/* Generate Button */}
+          <button
+            onClick={generatePassword}
+            className="generate-btn relative w-full py-3 rounded-xl font-semibold text-white 
+            bg-gradient-to-r from-violet-600 to-fuchsia-500 
+            hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg"
           >
-            Copy
+            Generate Password
           </button>
-        </div>
-        <div className="options-container space-y-4">
-          <div className="option-group flex items-center justify-between p-4 bg-gray-700/50 rounded-xl border border-gray-600">
-            <label className="option-label text-white text-lg font-medium">Length: {length}</label>
-            <input 
-              type="range" 
-              min={6} 
-              max={100} 
-              value={length}
-              className="slider w-48 h-2 bg-gray-600 rounded-lg cursor-pointer accent-orange-500 hover:accent-orange-400 transition-all shadow-md"
-              onChange={(e) => setLength(e.target.value)} 
-            />
-          </div>
-          <div className="checkbox-group flex items-center space-x-4 p-4 bg-gray-700/50 rounded-xl border border-gray-600 hover:bg-gray-700/70 transition-all">
-            <input 
-              type="checkbox" 
-              id="numberInput"
-              checked={numberAllowed}
-              onChange={() => setNumberAllowed((prev) => !prev)}
-              className="w-6 h-6 accent-orange-500 cursor-pointer shadow-md hover:scale-110 transition-all"
-            />
-            <label htmlFor="numberInput" className="option-label text-white text-lg font-medium cursor-pointer flex-1">Include Numbers</label>
-          </div>
-          <div className="checkbox-group flex items-center space-x-4 p-4 bg-gray-700/50 rounded-xl border border-gray-600 hover:bg-gray-700/70 transition-all">
-            <input 
-              type="checkbox" 
-              id="charInput"
-              checked={charAllowed}
-              onChange={() => setCharAllowed((prev) => !prev)}
-              className="w-6 h-6 accent-orange-500 cursor-pointer shadow-md hover:scale-110 transition-all"
-            />
-            <label htmlFor="charInput" className="option-label text-white text-lg font-medium cursor-pointer flex-1">Include Characters</label>
-          </div>
+
+          {/* Password History with Search (Feature 4) */}
+          <PasswordHistory passwords={history} />
         </div>
       </div>
-    </>
-  )
+    </div>
+  );
 }
